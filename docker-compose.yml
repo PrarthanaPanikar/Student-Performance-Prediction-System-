@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # FastAPI Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: student-performance-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - student-performance-network
+
+  # Next.js Dashboard
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: student-performance-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - student-performance-network
+
+  # Optional: PostgreSQL Database for production use
+  # Uncomment if you want to use PostgreSQL instead of SQLite
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: student-performance-db
+  #   environment:
+  #     POSTGRES_DB: student_performance
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+  #   networks:
+  #     - student-performance-network
+
+networks:
+  student-performance-network:
+    driver: bridge
+
+volumes:
+  # postgres_data:  # Uncomment if using PostgreSQL
+  #   driver: local
