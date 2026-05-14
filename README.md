@@ -400,9 +400,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For questions and support:
-- 📧 Email: [your-email@example.com]
-- 💬 GitHub Issues: [repository/issues]
-- 📖 Documentation: [repository/wiki]
+- 📧 Email: prarthanapanikar@gmail.com
 
 ## 🔮 Future Enhancements
 
